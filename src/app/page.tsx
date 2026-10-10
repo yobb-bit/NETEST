@@ -1,0 +1,11 @@
+import Link from "next/link";
+import { topics } from "@/features/reviewer/topics";
+
+export default function Home() {
+  return <div className="content">
+    <div className="welcome-row"><div><p className="eyebrow">YOUR NETWORKING STUDY SPACE</p><h1>Build your confidence,<br className="desktop-break" /> one connection at a time.</h1><p className="welcome-copy">A calm place to learn the concepts and practice thinking like a troubleshooter.</p></div><div className="hero-art" aria-hidden="true"><span className="orbit orbit-one"/><span className="orbit orbit-two"/><span className="orbit-core">N</span><span className="orbit-node node-one">↗</span><span className="orbit-node node-two">⌁</span><span className="orbit-node node-three">◈</span></div></div>
+    <section className="continue-card" aria-labelledby="continue-title"><div className="continue-icon" aria-hidden="true">✳</div><div className="continue-text"><span className="card-kicker">A GOOD PLACE TO START</span><h2 id="continue-title">Your first study session</h2><p>Get oriented with the building blocks of how networks communicate.</p></div><Link className="button-primary" href="/topics/network-fundamentals">Explore the basics <span aria-hidden="true">→</span></Link><div className="card-decoration" aria-hidden="true">✳</div></section>
+    <section className="topics-section" aria-labelledby="topics-title"><div className="section-heading"><div><p className="eyebrow">THE CCNA FOUNDATIONS</p><h2 id="topics-title">Explore study areas</h2></div><Link href="/topics" className="text-link">View all topics <span aria-hidden="true">→</span></Link></div><div className="topic-grid">{topics.slice(0, 4).map((topic) => <Link className="topic-card" href={`/topics/${topic.slug}`} key={topic.slug}><div className={`topic-icon ${topic.tint}`} aria-hidden="true">{topic.icon}</div><span className="topic-number">TOPIC {topic.number}</span><h3>{topic.title}</h3><p>{topic.shortDescription}</p><span className="topic-arrow" aria-hidden="true">↗</span></Link>)}</div></section>
+    <footer className="footer-note"><span className="footer-spark" aria-hidden="true">✳</span><span>Made for curious minds and patient troubleshooting.</span><span className="footer-version">YOUR STUDY SPACE · JUST GETTING STARTED</span></footer>
+  </div>;
+}

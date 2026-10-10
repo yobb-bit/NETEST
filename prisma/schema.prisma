@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Topic {
+  id            String       @id @default(cuid())
+  slug          String       @unique
+  title         String
+  description   String
+  examObjective String
+  sortOrder     Int
+  notes         StudyNote[]
+  questions     Question[]
+  attempts      QuizAttempt[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([sortOrder])
+}
+
+model StudyNote {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String
+  sortOrder Int
+  topicId   String
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([topicId, sortOrder])
+}
+
+model Question {
+  id         String         @id @default(cuid())
+  slug       String         @unique
+  prompt     String
+  explanation String
+  difficulty String         @default("introductory")
+  sortOrder  Int
+  topicId    String
+  topic      Topic          @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  options    AnswerOption[]
+  responses  QuizResponse[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@index([topicId, sortOrder])
+}
+
+model AnswerOption {
+  id        String   @id @default(cuid())
+  seedKey   String   @unique
+  text      String
+  isCorrect Boolean  @default(false)
+  sortOrder Int
+  questionId String
+  question  Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  responses QuizResponse[] @relation("SelectedOption")
+  createdAt DateTime @default(now())
+
+  @@index([questionId, sortOrder])
+}
+
+model QuizAttempt {
+  id             String         @id @default(cuid())
+  startedAt      DateTime       @default(now())
+  completedAt    DateTime?
+  score          Int?
+  totalQuestions Int
+  topicId        String?
+  topic          Topic?         @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  responses      QuizResponse[]
+}
+
+model QuizResponse {
+  id               String        @id @default(cuid())
+  attemptId        String
+  questionId       String
+  selectedOptionId String?
+  isCorrect        Boolean       @default(false)
+  attempt          QuizAttempt   @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question         Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedOption   AnswerOption? @relation("SelectedOption", fields: [selectedOptionId], references: [id], onDelete: SetNull)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+}
